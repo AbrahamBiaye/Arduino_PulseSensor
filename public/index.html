@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunu Santee - Accueil</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const username = localStorage.getItem('username'); // Supposons que vous stockiez le nom d'utilisateur dans localStorage après la connexion
+      if (username) {
+          const welcomeMessage = document.querySelector('h1');
+          welcomeMessage.textContent = `Bienvenue ${username} sur Sunu Santee`;
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <nav class="navigation">
+    <a href="#home" class="logo-lien">
+      <img src="logo.png" alt="logo" class="logo-image">
+    </a>
+    <div class="lien">
+      <a href="/" class="nav-lien">Accueil</a>
+      <a href="/conseils.html" class="nav-lien">Conseils</a>
+      <!-- Logout link -->
+      <a href="/logout" class="nav-lien">Déconnexion</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Bienvenue sur Sunu Santee</h1>
+    <div class="buts">
+      <button onclick="location.href='/vfc.html'">Mesure du VFC</button>
+      <button onclick="location.href='/bpm.html'">Mesure des BPM</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 Sunu Santee. Tous droits réservés.</p>
+  </footer>
+
+</body>
+</html>

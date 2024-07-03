@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunu Santee - Mesure des BPM</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
+  <style>
+    .main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+    }
+
+    .bpm-display {
+      margin-bottom: 2rem;
+    }
+
+    .bpm-value {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .health-status {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Canvas styles */
+    canvas {
+      width: 100% !important;
+      max-width: 800px;
+      height: 400px !important;
+    }
+
+    .doctor-info {
+      display: none;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navigation">
+      <a href="/" class="logo-lien">
+      <img src="logo.png" alt="logo" class="logo-image">
+      </a>
+      <div class="lien">
+        <a href="/" class="nav-lien">Accueil</a>
+      <a href="/conseils.html" class="nav-lien">Conseils</a>
+    <a href="/logout" class="nav-lien">Deconnexion</a>
+      </div>
+    </nav>
+  </header>
+  <main class="main">
+    <div class="container">
+      <h1>Mesure des BPM</h1>
+      <div class="bpm-display">
+        <div id="bpmText" class="bpm-value">BPM: --</div>
+        <div id="bpmStatus" class="health-status">État de santé : En attente...</div>
+      </div>
+      <canvas id="bpmChart"></canvas>
+      <div id="doctorInfo" class="doctor-info">
+      </div>
+    </div>
+  </main>
+  <footer>
+    <p>&copy; 2024 Sunu Santee. Tous droits réservés.</p>
+  </footer>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('bpmData', function(bpm) {
+      const bpmText = document.getElementById('bpmText');
+      const bpmStatus = document.getElementById('bpmStatus');
+      bpmText.innerText = 'BPM: ' + bpm;
+
+      if (bpm >= 60 && bpm <= 100) {
+        bpmText.style.color = 'green';
+        bpmStatus.textContent = 'État de santé : Normal';
+        bpmStatus.style.color = 'green';
+      } else if (bpm < 60 || bpm > 100) {
+        bpmText.style.color = 'red';
+        bpmStatus.textContent = 'État de santé : Mauvaise santé';
+        bpmStatus.style.color = 'red';
+        document.getElementById('doctorInfo').style.display = 'block';
+      }
+    });
+
+    const ctx = document.getElementById('bpmChart').getContext('2d');
+    const bpmChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: 'BPM en temps réel',
+          borderColor: 'rgb(75, 192, 192)',
+          borderWidth: 2,
+          fill: false,
+          data: []
+        }]
+      },
+      options: {
+        scales: {
+          x: {
+            type: 'realtime',
+            realtime: {
+              onRefresh: function(chart) {
+                chart.data.datasets.forEach(function(dataset) {
+                  dataset.data.push({
+                    x: Date.now(),
+                    y: parseFloat(document.getElementById('bpmText').innerText.split(': ')[1])
+                  });
+                });
+              },
+              delay: 2000
+            }
+          },
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
